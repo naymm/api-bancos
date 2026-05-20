@@ -1,0 +1,12 @@
+{
+  "name": "nbanks-api",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "login": "node src/login.js",
+    "saldo": "node src/saldo.js"
+  },
+  "dependencies": {
+    "playwright": "^1.60.0"
+  }
+}
