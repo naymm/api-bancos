@@ -83,7 +83,9 @@ Resposta de sucesso (`/api/movimentos/hoje`):
 
 Autenticação (recomendado): header `X-API-Key: <API_KEY>` ou query `?apiKey=<API_KEY>`.
 
-**Nota:** cada pedido a `/api/movimentos/hoje` abre o browser (30–90 s). No n8n, aumente o **Timeout** do nó HTTP Request para pelo menos **120000** ms. Só um pedido de scraping corre de cada vez (429 se outro estiver ativo).
+**Sessão:** na 1.ª chamada faz login e guarda cookies em `.session/`. Nas seguintes reutiliza a sessão (sem preencher email/senha) enquanto o nbanks não expirar a sessão. A resposta inclui `"auth": "session"` ou `"auth": "login"`.
+
+**Nota:** a 1.ª chamada demora mais (30–90 s); com sessão válida costuma ser mais rápida. No n8n, **Timeout** ≥ **120000** ms. Só um pedido de scraping corre de cada vez (429 se outro estiver ativo).
 
 ### 2. n8n — nó HTTP Request
 

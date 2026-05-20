@@ -1,5 +1,8 @@
 import http from "node:http";
-import { loginAndGetMovimentosHoje } from "./nbanks.js";
+import {
+  closeBrowserSession,
+  getMovimentosHojeWithMeta,
+} from "./nbanks.js";
 
 const PORT = Number(process.env.PORT ?? 3000);
 const API_KEY = process.env.API_KEY ?? "";
@@ -32,12 +35,13 @@ async function movimentosHoje(res) {
 
   emExecucao = true;
   try {
-    const data = await loginAndGetMovimentosHoje();
+    const { movimentos, auth } = await getMovimentosHojeWithMeta();
     json(res, 200, {
       ok: true,
-      count: data.length,
+      auth,
+      count: movimentos.length,
       fetchedAt: new Date().toISOString(),
-      data,
+      data: movimentos,
     });
   } catch (err) {
     json(res, 500, {
@@ -88,7 +92,16 @@ server.listen(PORT, "0.0.0.0", () => {
   console.log(`API nbanks: http://127.0.0.1:${PORT}`);
   console.log(`  GET /health`);
   console.log(`  GET /api/movimentos/hoje`);
+  console.log("  Sessão: reutiliza login guardado (.session/) enquanto válido");
   if (!API_KEY) {
     console.warn("AVISO: API_KEY não definida — API aberta na rede local.");
   }
 });
+
+async function shutdown() {
+  await closeBrowserSession();
+  process.exit(0);
+}
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
